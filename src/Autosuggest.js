@@ -39,6 +39,7 @@ export default class Autosuggest extends Component {
     renderSuggestionsContainer: PropTypes.func,
     getSuggestionValue: PropTypes.func.isRequired,
     renderSuggestion: PropTypes.func.isRequired,
+    loopThrough: PropTypes.bool,
     inputProps: (props, propName) => {
       const inputProps = props[propName];
 
@@ -85,6 +86,7 @@ export default class Autosuggest extends Component {
 
   static defaultProps = {
     renderSuggestionsContainer: defaultRenderSuggestionsContainer,
+	loopThrough: false,
     shouldRenderSuggestions: defaultShouldRenderSuggestions,
     alwaysRenderSuggestions: false,
     multiSection: false,
@@ -446,6 +448,7 @@ export default class Autosuggest extends Component {
       renderInputComponent,
       onSuggestionsFetchRequested,
       renderSuggestion,
+	  loopThrough,
       inputProps,
       multiSection,
       renderSectionTitle,
@@ -669,6 +672,7 @@ export default class Autosuggest extends Component {
       <Autowhatever
         multiSection={multiSection}
         items={items}
+		loopThrough={loopThrough}
         renderInputComponent={renderInputComponent}
         renderItemsContainer={this.renderSuggestionsContainer}
         renderItem={renderSuggestion}
