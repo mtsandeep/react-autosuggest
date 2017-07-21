@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "prop-types": "^15.5.10",
-    "react-autowhatever": "^10.1.0",
+    "react-autowhatever": "git+https://github.com/mtsandeep/react-autowhatever.git",
     "shallow-equal": "^1.0.0"
   },
   "peerDependencies": {
