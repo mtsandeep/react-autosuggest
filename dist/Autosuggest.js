@@ -152,27 +152,29 @@ var Autosuggest = (function(_Component) {
       key: 'componentWillReceiveProps',
       value: function componentWillReceiveProps(nextProps) {
         if (
-          (0, _arrays2.default)(nextProps.suggestions, this.props.suggestions)
+          !(0, _arrays2.default)(nextProps.suggestions, this.props.suggestions)
         ) {
-          if (
-            nextProps.highlightFirstSuggestion &&
-            nextProps.suggestions.length > 0 &&
-            this.justPressedUpDown === false
-          ) {
-            this.highlightFirstSuggestion();
-          }
-        } else {
           if (this.willRenderSuggestions(nextProps)) {
-            if (nextProps.highlightFirstSuggestion) {
+            if (this.props.suggestions.length == 0) {
               this.highlightFirstSuggestion();
+            } else {
+              this.updateHighlightedSuggestion(
+                this.props.suggestions.length - 1,
+                this.props.suggestions.length - 1
+              );
             }
-
             if (this.state.isCollapsed && !this.justSelectedSuggestion) {
               this.revealSuggestions();
             }
           } else {
             this.resetHighlightedSuggestion();
           }
+        }
+        if (nextProps.resetHighlighted === true) {
+          this.updateHighlightedSuggestion(
+            this.props.suggestions.length - 1,
+            this.props.suggestions.length - 1
+          );
         }
       }
     },
@@ -193,6 +195,7 @@ var Autosuggest = (function(_Component) {
           highlightedSectionIndex !== prevState.highlightedSectionIndex ||
           highlightedSuggestionIndex !== prevState.highlightedSuggestionIndex
         ) {
+          console.log('here');
           var suggestion = this.getHighlightedSuggestion();
 
           onSuggestionHighlighted({ suggestion: suggestion });
@@ -680,6 +683,7 @@ Autosuggest.propTypes = {
   getSuggestionValue: _propTypes2.default.func.isRequired,
   renderSuggestion: _propTypes2.default.func.isRequired,
   loopThrough: _propTypes2.default.bool,
+  resetHighlighted: _propTypes2.default.bool,
   inputProps: function inputProps(props, propName) {
     var inputProps = props[propName];
 
@@ -726,6 +730,7 @@ Autosuggest.propTypes = {
 Autosuggest.defaultProps = {
   renderSuggestionsContainer: defaultRenderSuggestionsContainer,
   loopThrough: false,
+  resetHighlighted: false,
   shouldRenderSuggestions: defaultShouldRenderSuggestions,
   alwaysRenderSuggestions: false,
   multiSection: false,
