@@ -7,7 +7,9 @@ import { defaultTheme, mapToAutowhateverTheme } from './theme';
 const alwaysTrue = () => true;
 const defaultShouldRenderSuggestions = value => value.trim().length > 0;
 const defaultRenderSuggestionsContainer = ({ containerProps, children }) =>
-  <div {...containerProps}>{children}</div>;
+  <div {...containerProps}>
+    {children}
+  </div>;
 
 export default class Autosuggest extends Component {
   static propTypes = {
@@ -40,6 +42,7 @@ export default class Autosuggest extends Component {
     getSuggestionValue: PropTypes.func.isRequired,
     renderSuggestion: PropTypes.func.isRequired,
     loopThrough: PropTypes.bool,
+    highlightLastItem: PropTypes.bool,
     inputProps: (props, propName) => {
       const inputProps = props[propName];
 
@@ -86,7 +89,8 @@ export default class Autosuggest extends Component {
 
   static defaultProps = {
     renderSuggestionsContainer: defaultRenderSuggestionsContainer,
-	loopThrough: false,
+    loopThrough: false,
+    highlightLastItem: false,
     shouldRenderSuggestions: defaultShouldRenderSuggestions,
     alwaysRenderSuggestions: false,
     multiSection: false,
@@ -118,26 +122,28 @@ export default class Autosuggest extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (shallowEqualArrays(nextProps.suggestions, this.props.suggestions)) {
-      if (
-        nextProps.highlightFirstSuggestion &&
-        nextProps.suggestions.length > 0 &&
-        this.justPressedUpDown === false
-      ) {
-        this.highlightFirstSuggestion();
-      }
-    } else {
+    if (!shallowEqualArrays(nextProps.suggestions, this.props.suggestions)) {
       if (this.willRenderSuggestions(nextProps)) {
-        if (nextProps.highlightFirstSuggestion) {
+        if (this.props.suggestions.length == 0) {
           this.highlightFirstSuggestion();
+        } else {
+          this.updateHighlightedSuggestion(
+            this.props.suggestions.length - 1,
+            this.props.suggestions.length - 1
+          );
         }
-
         if (this.state.isCollapsed && !this.justSelectedSuggestion) {
           this.revealSuggestions();
         }
       } else {
         this.resetHighlightedSuggestion();
       }
+    }
+    if (nextProps.highlightLastItem === true) {
+      this.updateHighlightedSuggestion(
+        this.props.suggestions.length - 1,
+        this.props.suggestions.length - 1
+      );
     }
   }
 
@@ -252,9 +258,8 @@ export default class Autosuggest extends Component {
     );
 
     return {
-      sectionIndex: typeof sectionIndex === 'string'
-        ? parseInt(sectionIndex, 10)
-        : null,
+      sectionIndex:
+        typeof sectionIndex === 'string' ? parseInt(sectionIndex, 10) : null,
       suggestionIndex: parseInt(suggestionIndex, 10)
     };
   }
@@ -448,7 +453,7 @@ export default class Autosuggest extends Component {
       renderInputComponent,
       onSuggestionsFetchRequested,
       renderSuggestion,
-	  loopThrough,
+      loopThrough,
       inputProps,
       multiSection,
       renderSectionTitle,
@@ -551,9 +556,8 @@ export default class Autosuggest extends Component {
                 // valueBeforeUpDown can be null if, for example, user
                 // hovers on the first suggestion and then pressed Up.
                 // If that happens, use the original input value.
-                newValue = valueBeforeUpDown === null
-                  ? value
-                  : valueBeforeUpDown;
+                newValue =
+                  valueBeforeUpDown === null ? value : valueBeforeUpDown;
               } else {
                 newValue = this.getSuggestionValueByIndex(
                   newHighlightedSectionIndex,
@@ -672,7 +676,7 @@ export default class Autosuggest extends Component {
       <Autowhatever
         multiSection={multiSection}
         items={items}
-		loopThrough={loopThrough}
+        loopThrough={loopThrough}
         renderInputComponent={renderInputComponent}
         renderItemsContainer={this.renderSuggestionsContainer}
         renderItem={renderSuggestion}
